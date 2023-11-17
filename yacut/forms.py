@@ -10,7 +10,6 @@ from yacut.constants import CUSTOM_ID_MAX_LENGTH, CUSTOM_ID_REGEXP
 
 class URLMapForm(FlaskForm):
     """Форма для создания короткой ссылки."""
-
     original_link = URLField(
         'Длинная ссылка',
         validators=[DataRequired(message='Обязательное поле'), Length(1, 256)],

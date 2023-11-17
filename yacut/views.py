@@ -16,20 +16,19 @@ from yacut.models import URLMap
 
 def get_unique_short_id() -> str:
     """Создает уникальное короткое имя, проверяетя уникальность в БД."""
-
     while True:
         short_name = ''.join(
             choices(ascii_letters + digits, k=GENERATED_LINK_LENGTH)
         )
         if URLMap.query.filter_by(short=short_name).first() is None:
             break
-
     return short_name
 
 
 def get_new_short_link(original: str, custom_id: str = None) -> str:
-    """Создает запись в модели URLMap на основе аргументов
-    original - оргинальный URL, custom_id - опциональное короткое имя.
+    """Создает запись в модели URLMap на основе аргументов.
+
+    Оriginal - оргинальный URL, custom_id - опциональное короткое имя.
     Возвращает короткую ссылку, состояющую из адреса хоста сервера
     и короткого имени.
     """
@@ -38,8 +37,8 @@ def get_new_short_link(original: str, custom_id: str = None) -> str:
 
     url_map = URLMap(original=original, short=custom_id)
 
-    # Сохранение объекта модели в БД с перехватом и
-    # кастомной обработкой внутренней ошибки сервера 500.
+    """Сохранение объекта модели в БД с перехватом и
+    кастомной обработкой внутренней ошибки сервера 500."""
     try:
         db.session.add(url_map)
         db.session.commit()
@@ -56,7 +55,9 @@ def get_new_short_link(original: str, custom_id: str = None) -> str:
 @app.route('/', methods=['GET', 'POST'])
 def index_view():
     """Функция-представление для главной страницы.
-    Обработка формы создания короткой ссылки."""
+
+    Обработка формы создания короткой ссылки.
+    """
     form = URLMapForm()
 
     if form.validate_on_submit():
@@ -78,6 +79,6 @@ def index_view():
 @app.route('/<string:short>', methods=['GET'])
 def resolve_short_link(short):
     """Разрешает короткую ссылку и возвращает редирект на оригинальный URL."""
-    url_map = URLMap.query.filter_by(short=short).first_or_404()
-    original_link = url_map.original
-    return redirect(original_link, code=HTTPStatus.FOUND)
+    return redirect(
+        location=URLMap.query.filter_by(short=short).first_or_404().original,
+        code=HTTPStatus.FOUND)

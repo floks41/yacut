@@ -3,7 +3,6 @@
 
 import re
 from http import HTTPStatus
-from string import ascii_letters, digits
 
 from flask import jsonify, request
 
@@ -12,8 +11,6 @@ from yacut.constants import CUSTOM_ID_REGEXP
 from yacut.error_handlers import InvalidAPIUsage
 from yacut.models import URLMap
 from yacut.views import get_new_short_link
-
-VALID_SYMBOL_SET = set((ascii_letters + digits))
 
 
 @app.route('/api/id/<string:short>/', methods=['GET'])
@@ -28,7 +25,9 @@ def get_url(short):
 @app.route('/api/id/', methods=['POST'])
 def create_id():
     """Создает короткую ссылку, сохраняет объект в модели URLMap.
-    Возвращает оригинальный URL короткую ссылку (short_link)."""
+
+    Возвращает оригинальный URL короткую ссылку (short_link).
+    """
     data = request.get_json()
     if data is None:
         raise InvalidAPIUsage('Отсутствует тело запроса')
